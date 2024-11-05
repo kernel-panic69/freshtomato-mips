@@ -27,6 +27,8 @@
  * OR MODIFICATIONS.
  */
 
+#include <linux/types.h>
+
 /*
  *  ==FILEVERSION 20000114==
  *
