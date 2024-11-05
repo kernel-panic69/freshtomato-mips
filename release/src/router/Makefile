@@ -289,6 +289,8 @@ endif
 obj-$(TCONFIG_BCMARM)		+= taskset
 obj-y				+= rc wanuptime rom others www bridge etc pppd rp-pppoe utils$(BCMEX) cstats rstats hotplug2 udevtrigger libusb10 usbmodeswitch
 obj-y				+= $(if $(TCONFIG_BCMARM),libmnl) $(IPSET_TARGET)
+obj-$(TCONFIG_PPTP)		+= accel-pptp
+obj-$(TCONFIG_PPTPD)		+= pptpd
 obj-$(TCONFIG_PROXY)		+= igmpproxy udpxy
 obj-$(TCONFIG_IPERF)		+= iperf
 obj-$(TCONFIG_BCMBSD)		+= bsd
@@ -337,8 +339,6 @@ obj-$(TCONFIG_STUBBY)		+= $(SSL_TARGET) libyaml getdns
 obj-$(TCONFIG_FTP)		+= $(if $(TCONFIG_FTP_SSL),$(SSL_TARGET)) vsftpd
 obj-$(TCONFIG_SDHC)		+= mmc
 obj-$(TCONFIG_L2TP)		+= xl2tpd
-obj-$(TCONFIG_PPTP)		+= accel-pptp
-obj-$(TCONFIG_PPTPD)		+= pptpd
 obj-$(TCONFIG_RAID)		+= mdadm
 obj-$(TCONFIG_NFS)		+= e2fsprogs zlib libevent portmap libnfsidmap nfs-utils
 obj-$(TCONFIG_USB)		+= e2fsprogs p910nd comgt libjson-c libubox uqmi sd-idle apcupsd
@@ -1493,17 +1493,16 @@ iproute2-3.x-clean:
 	-rm -f iproute2-3.x/Config
 	$(call unpatch_files,iproute2-3.x)
 
-rp-pppoe/src/stamp-h1: rp-pppoe/src/Makefile.in
+rp-pppoe/src/Makefile:
 	$(call patch_files,rp-pppoe)
 	cd rp-pppoe/src && \
 		CFLAGS="$(if $(TCONFIG_OPTIMIZE_SIZE),-Os,-O2) -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
 		CPPFLAGS="$(if $(TCONFIG_OPTIMIZE_SIZE),-Os,-O2) -ffunction-sections -fdata-sections" \
 		LDFLAGS="-ffunction-sections -fdata-sections -Wl,--gc-sections" \
 		$(CONFIGURE) --prefix=/usr --enable-plugin=$(TOP)/pppd --disable-debugging \
-			ac_cv_linux_kernel_pppoe=yes rpppoe_cv_pack_bitfields=rev ac_cv_path_PPPD=$(TOP)/pppd
-	@touch $@
+			ac_cv_linux_kernel_pppoe=yes ac_cv_path_PPPD=$(TOP)/pppd
 
-rp-pppoe: rp-pppoe/src/stamp-h1
+rp-pppoe: rp-pppoe/src/Makefile
 	@$(SEP)
 	$(MAKE) -C rp-pppoe/src pppoe-relay rp-pppoe.so $(PARALLEL_BUILD)
 
@@ -1515,8 +1514,7 @@ rp-pppoe-install:
 
 rp-pppoe-clean:
 	-@$(MAKE) -C rp-pppoe/src clean
-	@rm -f rp-pppoe/src/pppoe-relay
-	@rm -f rp-pppoe/src/stamp-h1
+	@rm -f rp-pppoe/src/Makefile
 	$(call unpatch_files,rp-pppoe)
 
 libnfnetlink/stamp-h1:
@@ -1686,7 +1684,7 @@ wsdd2-clean:
 	-@$(MAKE) -C wsdd2 clean
 	$(call unpatch_files,wsdd2)
 
-accel-pptp/Makefile: accel-pptp/Makefile.in $(LINUXDIR)/include/linux/version.h
+accel-pptp/Makefile:
 	$(call patch_files,accel-pptp)
 	cd accel-pptp && \
 		CFLAGS="-g -O2 $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
@@ -1707,14 +1705,14 @@ accel-pptp-clean:
 	@rm -f accel-pptp/Makefile
 	$(call unpatch_files,accel-pptp)
 
-pptpd/stamp-h1:
+pptpd/Makefile:
 	$(call patch_files,pptpd)
-	ln -sf ../../pppd/pppd/ pptpd/plugins/pppd
 	cd pptpd && \
-		$(CONFIGURE) --prefix=$(INSTALLDIR)/pptpd --enable-bcrelay
-	touch $@
+		CFLAGS="-Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
+		LDFLAGS="-Wl,--gc-sections" \
+		$(CONFIGURE) --prefix=$(INSTALLDIR)/pptpd --enable-bcrelay --disable-dependency-tracking
 
-pptpd: pptpd/stamp-h1
+pptpd: pptpd/Makefile
 	@$(SEP)
 	@$(MAKE) -C $@ $(PARALLEL_BUILD)
 
@@ -1726,7 +1724,7 @@ pptpd-install:
 
 pptpd-clean:
 	-@$(MAKE) -C pptpd clean
-	@rm -rf pptpd/stamp-h1 pptpd/.deps
+	@rm -rf pptpd/Makefile
 	@rm -f pptpd/plugins/pppd
 	$(call unpatch_files,pptpd)
 
