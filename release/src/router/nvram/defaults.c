@@ -409,7 +409,9 @@ const defaults_t defaults[] = {
 	{ "wan_ppp_redialperiod",	"20"				},	/* Redial Period (seconds) */
 	{ "wan_ppp_service",		""				},	/* PPPoE service name */
 	{ "wan_ppp_custom",		""				},	/* PPPD additional options */
+#ifndef TCONFIG_OPTIMIZE_SIZE_MORE
 	{ "wan_ppp_mlppp",		"0"				},	/* PPPoE single line MLPPP */
+#endif
 	{ "wan_pppoe_lei",		"10"				},
 	{ "wan_pppoe_lef",		"5"				},
 
@@ -421,7 +423,9 @@ const defaults_t defaults[] = {
 	{ "wan2_ppp_redialperiod",	"20"				},	/* Redial Period (seconds) */
 	{ "wan2_ppp_service",		""				},	/* PPPoE service name */
 	{ "wan2_ppp_custom",		""				},	/* PPPD additional options */
+#ifndef TCONFIG_OPTIMIZE_SIZE_MORE
 	{ "wan2_ppp_mlppp",		"0"				},	/* PPPoE single line MLPPP */
+#endif
 	{ "wan2_pppoe_lei",		"10"				},
 	{ "wan2_pppoe_lef",		"5"				},
 
@@ -434,7 +438,9 @@ const defaults_t defaults[] = {
 	{ "wan3_ppp_redialperiod",	"20"				},	/* Redial Period (seconds) */
 	{ "wan3_ppp_service",		""				},	/* PPPoE service name */
 	{ "wan3_ppp_custom",		""				},	/* PPPD additional options */
+#ifndef TCONFIG_OPTIMIZE_SIZE_MORE
 	{ "wan3_ppp_mlppp",		"0"				},	/* PPPoE single line MLPPP */
+#endif
 	{ "wan3_pppoe_lei",		"10"				},
 	{ "wan3_pppoe_lef",		"5"				},
 
@@ -446,7 +452,9 @@ const defaults_t defaults[] = {
 	{ "wan4_ppp_redialperiod",	"20"				},	/* Redial Period (seconds) */
 	{ "wan4_ppp_service",		""				},	/* PPPoE service name */
 	{ "wan4_ppp_custom",		""				},	/* PPPD additional options */
+#ifndef TCONFIG_OPTIMIZE_SIZE_MORE
 	{ "wan4_ppp_mlppp",		"0"				},	/* PPPoE single line MLPPP */
+#endif
 	{ "wan4_pppoe_lei",		"10"				},
 	{ "wan4_pppoe_lef",		"5"				},
 #endif /* TCONFIG_MULTIWAN */
