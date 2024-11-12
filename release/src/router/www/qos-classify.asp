@@ -366,15 +366,10 @@ function init() {
 <script>
 	if (nvram.qos_enable != '1')
 		W('<div class="note-disabled"><b>QoS disabled.<\/b><br><br><a href="qos-settings.asp">Enable &raquo;<\/a><\/div>');
-	else
+	else {
 		show_notice1('<% notice("iptables"); %>');
+		W('<div class="section"><div class="tomato-grid" id="qos-cl-grid"></div></div>'); };
 </script>
-
-<!-- / / / -->
-
-<div class="section">
-	<div class="tomato-grid" id="qos-cl-grid"></div>
-</div>
 
 <!-- / / / -->
 
