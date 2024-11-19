@@ -14,6 +14,7 @@
 <title>[<% ident(); %>] QoS: Classification</title>
 <link rel="stylesheet" type="text/css" href="tomato.css?rel=<% version(); %>">
 <% css(); %>
+<script src="isup.jsz?_http_id=<% nv(http_id); %>"></script>
 <script src="tomato.js?rel=<% version(); %>"></script>
 <script src="protocols.js?rel=<% version(); %>"></script>
 
@@ -22,6 +23,11 @@
 //	<% nvram("qos_enable,qos_classnames,qos_orules"); %>
 
 //	<% layer7(); %>
+
+function show() {
+	elem.setInnerHTML('notice_container', '<div id="notice">'+isup.notice_iptables.replace(/\n/g, '<br>')+'<\/div><br style="clear:both">');
+	elem.display('notice_container', isup.notice_iptables != '');
+}
 
 var abc = nvram.qos_classnames.split(' ');
 
@@ -241,11 +247,10 @@ qosg.enDiFields = function(row) {
 	f[3].disabled = x;
 	if (f[3].selectedIndex == 0)
 		x = 1;
-	f[4].disabled = x;
 
+	f[4].disabled = x;
 	f[6].disabled = (f[5].selectedIndex != 0);
 	f[5].disabled = (f[6].selectedIndex != 0);
-
 	f[8].disabled = (f[7].value != '*');
 }
 
@@ -339,6 +344,7 @@ function save() {
 
 function init() {
 	qosg.recolor();
+	up.initPage(250, 5);
 }
 </script>
 </head>
@@ -366,10 +372,19 @@ function init() {
 <script>
 	if (nvram.qos_enable != '1')
 		W('<div class="note-disabled"><b>QoS disabled.<\/b><br><br><a href="qos-settings.asp">Enable &raquo;<\/a><\/div>');
-	else {
-		show_notice1('<% notice("iptables"); %>');
-		W('<div class="section"><div class="tomato-grid" id="qos-cl-grid"></div></div>'); };
+	else
+		elem.display('qos-cl-grid', 1);
 </script>
+
+<!-- / / / -->
+
+<div class="section">
+	<div class="tomato-grid" id="qos-cl-grid" style="display:none"></div>
+</div>
+
+<!-- / / / -->
+
+<div id="notice_container" style="display:none">&nbsp;</div>
 
 <!-- / / / -->
 
