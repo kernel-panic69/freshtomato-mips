@@ -76,3 +76,4 @@ TCONFIG_BLINK=y
 # TCONFIG_BCMWL6 is not set
 # TCONFIG_PROXY is not set
 # TCONFIG_HAVEGED is not set
+# TCONFIG_EXTSW is not set
