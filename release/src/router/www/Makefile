@@ -52,6 +52,17 @@ else
 	mv $(INSTALLDIR)/www/advanced-vlan-r1.asp $(INSTALLDIR)/www/advanced-vlan.asp
 endif
 
+# Only include external switch options if EXTSW is enabled (RT-AC88U)
+ifneq ($(TCONFIG_EXTSW),y)
+	sed -i $(INSTALLDIR)/www/at.css -e "/EXTSW-BEGIN/,/EXTSW-END/d"
+	sed -i $(INSTALLDIR)/www/tomato.js -e "/EXTSW-BEGIN/,/EXTSW-END/d"
+	sed -i $(INSTALLDIR)/www/advanced-vlan.asp -e "/EXTSW-BEGIN/,/EXTSW-END/d"
+else
+	sed -i $(INSTALLDIR)/www/at.css -e "/EXTSW-NO-BEGIN/,/EXTSW-NO-END/d"
+	sed -i $(INSTALLDIR)/www/tomato.js -e "/EXTSW-NO-BEGIN/,/EXTSW-NO-END/d"
+	sed -i $(INSTALLDIR)/www/advanced-vlan.asp -e "/EXTSW-NO-BEGIN/,/EXTSW-NO-END/d"
+endif
+
 # Only include the CIFS pages if CIFS is configured in.
 ifneq ($(TCONFIG_CIFS),y)
 	rm -f $(INSTALLDIR)/www/admin-cifs.asp
@@ -76,9 +87,11 @@ else
  ifeq ($(TCONFIG_BRCM_NAND_JFFS2),y)
 	sed -i $(INSTALLDIR)/www/admin-jffs2.asp -e "/JFFS2-BEGIN/,/JFFS2-END/d"
 	sed -i $(INSTALLDIR)/www/nas-bittorrent.asp -e "/JFFS2-BEGIN/,/JFFS2-END/d"
+	sed -i $(INSTALLDIR)/www/isup.jsz -e "/JFFS2-BEGIN/,/JFFS2-END/d"
  else
 	sed -i $(INSTALLDIR)/www/admin-jffs2.asp -e "/JFFS2NAND-BEGIN/,/JFFS2NAND-END/d"
 	sed -i $(INSTALLDIR)/www/nas-bittorrent.asp -e "/JFFS2NAND-BEGIN/,/JFFS2NAND-END/d"
+	sed -i $(INSTALLDIR)/www/isup.jsz -e "/JFFS2NAND-BEGIN/,/JFFS2NAND-END/d"
  endif
 endif
 
@@ -574,7 +587,7 @@ endif
 
 # clean up
 	cd $(INSTALLDIR)/www && \
-	for F in $(wildcard *.asp *.js *.jsx *.jsz *.html); do \
+	for F in $(wildcard *.asp *.js *.jsx *.jsz *.html) at.css; do \
 		[ -f $(INSTALLDIR)/www/$$F ] && sed -i $$F \
 		-e "/USB-BEGIN/d"	-e "/USB-END/d" \
 		-e "/UPS-BEGIN/d"	-e "/UPS-END/d" \
@@ -647,6 +660,8 @@ endif
 		-e "/WIREGUARD-BEGIN/d"	-e "/WIREGUARD-END/d" \
 		-e "/DDNS4CLS-BEGIN/d"	-e "/DDNS4CLS-END/d" \
 		-e "/DDNS2CLS-BEGIN/d"	-e "/DDNS2CLS-END/d" \
+		-e "/EXTSW-BEGIN/d"	-e "/EXTSW-END/d" \
+		-e "/EXTSW-NO-BEGIN/d"	-e "/EXTSW-NO-END/d" \
 		|| true; \
 	done
 

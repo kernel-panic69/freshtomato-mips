@@ -2481,9 +2481,9 @@ libxml2: libxml2/static/Makefile libxml2/build/Makefile
 	@$(MAKE) -C libxml2/build DESTDIR=$(TOP)/libxml2/staged install
 
 libxml2-install:
-	install -D libxml2/staged/usr/lib/libxml2.so.2.13.4 $(INSTALLDIR)/libxml2/usr/lib/libxml2.so.2.13.4
-	$(STRIP) $(INSTALLDIR)/libxml2/usr/lib/libxml2.so.2.13.4
-	cd $(INSTALLDIR)/libxml2/usr/lib && ln -sf libxml2.so.2.13.4 libxml2.so.2 && ln -sf libxml2.so.2.13.4 libxml2.so
+	install -D libxml2/staged/usr/lib/libxml2.so.2.13.5 $(INSTALLDIR)/libxml2/usr/lib/libxml2.so.2.13.5
+	$(STRIP) $(INSTALLDIR)/libxml2/usr/lib/libxml2.so.2.13.5
+	cd $(INSTALLDIR)/libxml2/usr/lib && ln -sf libxml2.so.2.13.5 libxml2.so.2 && ln -sf libxml2.so.2.13.5 libxml2.so
 
 libxml2-clean:
 	@rm -rf libxml2/static
@@ -3835,9 +3835,9 @@ expat: expat/stamp-h1
 	@$(MAKE) -C $@ DESTDIR=$(TOP)/expat/staged install
 
 expat-install:
-	install -D expat/staged/usr/lib/libexpat.so.1.9.3 $(INSTALLDIR)/expat/usr/lib/libexpat.so.1.9.3
-	$(STRIP) $(INSTALLDIR)/expat/usr/lib/libexpat.so.1.9.3
-	cd $(INSTALLDIR)/expat/usr/lib && ln -sf libexpat.so.1.9.3 libexpat.so.1
+	install -D expat/staged/usr/lib/libexpat.so.1.10.0 $(INSTALLDIR)/expat/usr/lib/libexpat.so.1.10.0
+	$(STRIP) $(INSTALLDIR)/expat/usr/lib/libexpat.so.1.10.0
+	cd $(INSTALLDIR)/expat/usr/lib && ln -sf libexpat.so.1.10.0 libexpat.so.1
 
 expat-clean:
 	-@$(MAKE) -C expat clean

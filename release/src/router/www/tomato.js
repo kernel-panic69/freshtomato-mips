@@ -11,7 +11,12 @@
 
 /* global variables */
 var MAX_BRIDGE_ID = 3;
+/* EXTSW-NO-BEGIN */
 var MAX_PORT_ID = 4;
+/* EXTSW-NO-END */
+/* EXTSW-BEGIN */
+var MAX_PORT_ID = 5;
+/* EXTSW-END */
 var MAX_VLAN_ID = 15;
 /* DUALWAN-BEGIN */
 var xifs = [['wan','lan','lan1','lan2','lan3','wan2'],['WAN0','LAN0','LAN1','LAN2','LAN3','WAN1']];
@@ -454,7 +459,7 @@ function v_macip(e, quiet, bok, lan_ipaddr, lan_netmask) {
 		}
 	}
 	for (i = 0; i < a.length; ++i) {
-		b = a[i];    
+		b = a[i];
 		b = fixIP(b);
 		if (!b) {
 			ferror.set(e, 'Invalid IP address', quiet);
@@ -756,7 +761,7 @@ function ZeroIPv6PrefixBits(ip, prefix_length) {
 	n = Math.floor(prefix_length/4);
 	m = 32 - Math.ceil(prefix_length/4);
 	b = prefix_length % 4;
-	if (b != 0) 
+	if (b != 0)
 		c = (parseInt(ip.charAt(n), 16) & (0xf << 4-b)).toString(16);
 	else
 		c = '';
@@ -1230,7 +1235,7 @@ function TGO(e) {
 
 function tgHideIcons() {
 	var e;
-	while ((e = document.getElementById('tg-row-panel')) != null) e.parentNode.removeChild(e);
+	while ((e = E('tg-row-panel')) != null) e.parentNode.removeChild(e);
 }
 
 // ---- options = sort, move, delete
@@ -1608,7 +1613,7 @@ TomatoGrid.prototype = {
 						s += '>';
 					break;
 					case 'textarea':
-						if (which == 'edit') document.getElementById(f.proxy).value = values[vi];
+						if (which == 'edit') E(f.proxy).value = values[vi];
 					break;
 					default:
 						s += f.custom.replace(/\$which\$/g, which);
@@ -1734,8 +1739,8 @@ TomatoGrid.prototype = {
 	clearTextarea: function() {
 		for (var i = 0; i < this.editorFields.length; ++i) {
 			if (this.editorFields[i].type == 'textarea') {
-				document.getElementById(this.editorFields[i].proxy).value = '';
-				ferror.clear(document.getElementById(this.editorFields[i].proxy));
+				E(this.editorFields[i].proxy).value = '';
+				ferror.clear(E(this.editorFields[i].proxy));
 			}
 		}
 	},
@@ -2200,7 +2205,7 @@ function genStdTimeList(id, zero, min) {
 		}
 		b.push('</select> ');
 	}
-	document.write(b.join(''));
+	W(b.join(''));
 }
 
 function genStdRefresh(spin, min, exec) {
@@ -2224,7 +2229,7 @@ function _tabCreate(tabs) {
 }
 
 function tabCreate(tabs) {
-	document.write(_tabCreate.apply(this, arguments));
+	W(_tabCreate.apply(this, arguments));
 }
 
 function tabHigh(id) {
@@ -2378,12 +2383,6 @@ function get_config(name, def) {
 }
 
 function nothing() {
-}
-
-// -----------------------------------------------------------------------------
-
-function show_notice1(s) {
-	if (s.length) document.write('<div id="notice">'+s.replace(/\n/g, '<br>')+'</div><br style="clear:both">');
 }
 
 // -----------------------------------------------------------------------------
@@ -2586,8 +2585,7 @@ function navi() {
 /* IPV6-END */
 			['DMZ',				'dmz.asp'],
 			['Triggered',			'triggered.asp'],
-			['UPnP/NAT-PMP',		'upnp.asp'] ] ],
-		['Access Restriction',		'restrict.asp'],
+			['UPnP IGD & PCP',		'upnp.asp'] ] ],
 		['QoS',				'qos', 0, [
 			['Basic Settings',		'settings.asp'],
 			['Classification',		'classify.asp'],
@@ -2595,12 +2593,15 @@ function navi() {
 			['View Details',		'detailed.asp'],
 			['Transfer Rates',		'ctrate.asp']
 			] ],
-		['Bandwidth Limiter',		'bwlimit.asp'],
-		null,
+		['Misc',			'misc', 0, [
+			['Access Restriction',		'restrict.asp'],
+			['Bandwidth Limiter',		'bwlimit.asp']
 /* NOCAT-BEGIN */
-		['Captive Portal',		'splashd.asp'],
+			,['Captive Portal',		'splashd.asp']
 /* NOCAT-END */
+			] ],
 /* NGINX-BEGIN */
+		null,
 		['Web Server',			'web', 0, [
 			['Nginx & PHP',		'nginx.asp'],
 			['MySQL Server',	'mysql.asp']
@@ -2695,6 +2696,9 @@ function navi() {
 	}
 	else base = '';
 
+	var lastOpenCategory = null;
+	var isMiscActive = false;
+
 	for (i = 0; i < menu.length; ++i) {
 		var m = menu[i];
 		if (!m) {
@@ -2704,10 +2708,11 @@ function navi() {
 		if (m.length == 2)
 			buf.push('<a href="'+m[1]+'" class="indent1'+(((base == '') && (name == m[1])) ? ' active' : '')+'">'+m[0]+'</a>');
 		else {
-			if (base == m[1])
+			if (base == m[1]) {
 				b = name;
-			else {
-				a = cookie.get('menu_' + m[1]);
+				lastOpenCategory = i;
+			} else {
+				a = cookie.get('menu_'+m[1]);
 				b = m[3][0][1];
 				for (j = 0; j < m[3].length; ++j) {
 					if (m[3][j][1] == a) {
@@ -2719,22 +2724,57 @@ function navi() {
 			a = m[1]+'-'+b;
 			if (a == 'status-overview.asp') a = '/';
 			on1 = (base == m[1]);
-			buf.push('<a href="'+a+'" class="indent1'+(on1 ? ' active' : '')+'">'+m[0]+'</a>');
-			if ((!on1) && (m[2] == 0) && (cexp.indexOf(m[1]) == -1)) continue;
+
+			var shouldExpand = cexp.indexOf(m[1]) !== -1;
+			buf.push('<a href="javascript:void(0);" class="indent1'+(on1 ? ' active' : '')+'" onclick="toggleMenu('+i+')" name="menu_'+m[1]+'">'+m[0]+'</a>');
+
+			var isExpanded = on1 || shouldExpand;
+			if (m[1] === 'misc') {
+				for (j = 0; j < m[3].length; ++j) {
+					if (name === m[3][j][1]) {
+						isExpanded = true;
+						isMiscActive = true;
+						break;
+					}
+				}
+			}
+			buf.push('<div id="menu_'+i+'" style="display:'+(isExpanded ? 'block' : 'none')+'">');
 
 			for (j = 0; j < m[3].length; ++j) {
 				sm = m[3][j];
-				a = m[1]+'-'+sm[1];
+				a = m[1] === 'misc' ? sm[1] : m[1]+'-'+sm[1];
 				if (a == 'status-overview.asp') a = '/';
-				buf.push('<a href="'+a+'" class="indent2'+(((on1) && (name == sm[1])) ? ' active' : '')+'">'+sm[0]+'</a>');
+				var isActive = (m[1] === 'misc' && name === sm[1]) || ((on1) && (name == sm[1]));
+				buf.push('<a href="'+a+'" class="indent2'+(isActive ? ' active' : '')+'">'+sm[0]+'</a>');
 			}
+			buf.push('</div>');
 		}
 	}
-	document.write(buf.join(''));
+
+	if (lastOpenCategory !== null) {
+		for (i = 0; i < menu.length; ++i) {
+			if (i !== lastOpenCategory && menu[i] && menu[i].length > 2 && cexp.indexOf(menu[i][1]) === -1 && !(menu[i][1] === 'misc' && isMiscActive))
+				buf.push('<script>E("menu_'+i+'").style.display = "none";</script>');
+		}
+	}
+	W(buf.join(''));
 
 	if (base.length) {
 		if ((base == 'qos') && (name == 'detailed.asp')) name = 'view.asp';
 		cookie.set('menu_'+base, name);
+	}
+}
+
+function toggleMenu(id) {
+	var submenu = E('menu_'+id);
+	if (submenu) {
+		submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+
+		var links = submenu.getElementsByTagName('a');
+		for (var k = 0; k < links.length; k++) {
+			if (!links[k].classList.contains('active'))
+				links[k].classList.remove('active');
+		}
 	}
 }
 
@@ -2848,7 +2888,7 @@ function createFieldTable(flags, desc) {
 		buf.push('</tr>');
 	}
 	if ((!flags) || (flags.indexOf('noclose') == -1)) buf.push('</table>');
-	document.write(buf.join(''));
+	W(buf.join(''));
 }
 
 function peekaboo(id, show) {
@@ -2972,7 +3012,7 @@ function wikiLink() {
 
 	var res = '<a href="'+url+'/'+page+'" target="_blank" rel="noopener noreferrer">Wiki</a> | <a onclick="toggleTheme()" href="#">◐</a>';
 
-	document.write(res);
+	W(res);
 	var alt = cookie.get('gui_themet');
 	if (alt == '1') { getTheme(); }
 }

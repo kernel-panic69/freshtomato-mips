@@ -5,6 +5,79 @@ FreshTomato-MIPS Changelog
 
 
 
+2024.4          2024.11.26
+---------------------------
+
+- busybox: update to 1.37.0
+- php: update to 8.3.13
+- nginx: update to 1.27.2
+- sqlite: update to 3.47.0
+- expat: update to 2.6.4
+- dnsmasq: update to f006be7 (2024.10.04) snapshot
+- libsodium: update to latest 1.0.20-stable
+- nano: update to 8.2
+- openssl-3.0: update to 3.0.15
+- libcurl: update to 8.11.0
+- rom: update CA bundle to 2024-09-24
+- libjson-c: update to 0.18-20240915
+- libjpeg-turbo: update to 3.0.4
+- meson: update to 1.6.0
+- libxml2: update to 2.13.5
+- libpng: update to 1.6.44
+- libzip: update to 1.11.2
+- libubox: update to eb9bcb6 (2024-03-29) snapshot
+- uqmi: update to 28b48a1 (2024-08-25) snapshot
+- haveged: update to 1.9.19
+- dropbear: update to 2024.86
+- rp-pppoe: update to 4.0 
+- pppd: update to 2.5.1
+- build: always install librt
+- build: Makefile: openvpn: fix plugin support
+- build: Makefile: tune e2fsprogs recipe
+- build: Makefile: openvpn do not disable debug if TOMATO_EXPERIMENTAL flag is set
+- build: Makefile: fix miniupnpd recipe for MIPS branch
+- build: Makefile: set default mode for C/C++ depending on toolchain
+- build: introduce EXTRA_CXXFLAGS
+- GUI: Dynamic menu and Misc category
+- GUI: basic-network.asp align table style for enable/disabled options (like the VLAN page)
+- GUI: advanced-wlanvifs.asp - align table style for Enabled/Disabled options
+- GUI: vpn-tinc.asp - align table style for Enable/Disable options
+- GUI: status-data.jsx - tweaked thresholds for Amber and Red as they triggered too early
+- GUI: Basic: DDNS: add form for custom interface name for "External IP Checker" in case of non-WAN mode (fix ARM #337)
+- GUI: VPN: OpenVPN server: add ability to generate 2048 byte Diffie-Hellman parameters
+- GUI: VPN: OpenVPN server: add support for ECDH key generation
+- GUI: VPN: OpenVPN server: set ECDH key generation as default
+- GUI: VPN: OpenVPN *: fix issue with (re)starting clients/servers when saving a page but clients/servers are down
+- GUI: Port Forwarding: Basic: use ajax to refresh info on page
+- GUI: Port Forwarding: Basic IPv6: use ajax to refresh info on page
+- GUI: Basic: IPv6: use ajax to refresh info on page
+- GUI: Administration: CIFS Client: use ajax to refresh info on page
+- GUI: Port Forwarding: DMZ: use ajax to refresh info on page
+- GUI: Misc: Access Restriction: use ajax to refresh info on page
+- GUI: QoS: Classification: use ajax to refresh info on page
+- GUI: Administration: JFFS: use ajax to refresh info on page; also some fixes
+- GUI: Improve UPnP IGD & PCP/NAT-PMP
+- accel-pptp: add support for pppd 2.5.x
+- dnsmasq: update DNS records after pruning DHCP leases (added as a patch)
+- httpd: add rel version to each .css script call
+- libncurses: update recipe, add patches from openwrt
+- minidlna: add patches from debian
+- mwwatchdog - remove console warning when mwwatchdog_debug is set to NULL
+- openvpn: enable (back) management on AIO or ARM images
+- openvpn: show data & control channel handshakes only above log level 3 (verb 3); added as a patch
+- pppd: remove patch 390 (MIPS only) as librt is now always added to the target
+- pptpd: do not build plugins; tune recipe
+- rc: transmission.c: correctly remove the blocklist directory on startup. Also tune tcp_adv_win_scale
+- rom: openssl.cnf: add default commonName
+- samba3: move recipes to router/Makefile and tune them
+- samba: add clean sources of 3.6.25 and one patch instead
+- switch4g: add weird PIN_STATUS because sometimes it happens
+- transmission: patches: revert commit 66dbc261 (add ARC4 implementation inside transmission, disable it in openssl)
+- www: tomato.css: define size of Ethernet Ports State (fix ARM #311)
+- vpnrouting.sh: do not use nslookup
+- vpnrouting.sh: fix order in stopRouting()
+
+
 2024.3          2024.08.04
 ---------------------------
 
