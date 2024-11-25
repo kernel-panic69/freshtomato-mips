@@ -342,6 +342,15 @@ function save() {
 	form.submit(fom, 1);
 }
 
+function earlyInit() {
+	if (nvram.qos_enable != '1')
+		elem.display('qos-note1', 1);
+	else
+		elem.display('qos-cl-grid', 1);
+
+	qosg.setup();
+}
+
 function init() {
 	qosg.recolor();
 	up.initPage(250, 5);
@@ -369,12 +378,7 @@ function init() {
 <!-- / / / -->
 
 <div class="section-title">Outbound Direction</div>
-<script>
-	if (nvram.qos_enable != '1')
-		W('<div class="note-disabled"><b>QoS disabled.<\/b><br><br><a href="qos-settings.asp">Enable &raquo;<\/a><\/div>');
-	else
-		elem.display('qos-cl-grid', 1);
-</script>
+<div class="note-disabled" id="qos-note1" style="display:none"><b>QoS disabled.</b><br><br><a href="qos-settings.asp">Enable &raquo;</a></div>
 
 <!-- / / / -->
 
@@ -397,6 +401,6 @@ function init() {
 </td></tr>
 </table>
 </form>
-<script>qosg.setup();</script>
+<script>earlyInit();</script>
 </body>
 </html>
