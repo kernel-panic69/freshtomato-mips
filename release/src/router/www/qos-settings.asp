@@ -156,7 +156,7 @@ function init() {
 		toggleVisibility(cprefix, "classnames");
 
 /* CTF-BEGIN */
-	if (nvram.ctf_disable == 0) {
+	if (nvram.ctf_disable && nvram.ctf_disable === 0) {
 		E('_f_qos_enable').disabled = 1;
 		E('ctfnotice').style.display = 'block';
 	}
@@ -208,12 +208,12 @@ function init() {
 <div class="section-title">Basic Settings</div>
 <div class="section">
 <!-- CTF-BEGIN -->
-	<div class="fields" id="ctfnotice" style="display:none"><div class="about"><b><a href="advanced-misc.asp">CTF is enabled</a> so QoS doesn't work.</b></div></div>
+	<div class="note-disabled" id="ctfnotice"><div class="about"><p style="color: red;"><b><a href="advanced-misc.asp">CTF</a> is currently enabled, this prevents QoS from functioning.</b></div></div>
 <!-- CTF-END -->
 <!-- BCMNAT-BEGIN -->
-	<div class="fields" id="bcmnatnotice" style="display:none"><div class="about"><b>QoS as well as <a href="advanced-misc.asp">Broadcom FastNAT</a> is enabled so the latter doesn't work.</b></div></div>
+	<div class="note-disabled" id="bcmnatnotice"><div class="about"><p style="color: red;"><b><a href="advanced-misc.asp">FastNAT</a> is currently enabled this prevents QoS from functioning.</b></div></div>
 <!-- BCMNAT-END -->
-	<div class="fields" id="qosnotice" style="display:none"><div class="about"><b>Upload Limit rules for host IP addresses will not be applied, and Outbound QoS rules will govern upload rates.</b></div></div>
+	<div class="note-disabled" id="qosnotice"><div class="about"><b>Upload Limit rules for host IP addresses will not be applied, and Outbound QoS rules will govern upload rates.</b></div></div>
 	<script>
 		classList = [];
 		for (i = 0; i < 10; ++i)
@@ -228,7 +228,7 @@ function init() {
 				{ suffix: ' RST &nbsp;', name: 'f_qos_rst', type: 'checkbox', value: nvram.qos_rst == '1' }
 			] },
 			{ title: 'Prioritize ICMP', name: 'f_qos_icmp', type: 'checkbox', value: nvram.qos_icmp == '1' },
-			{ title: 'No Ingress QoS for UDP', name: 'f_qos_udp', type: 'checkbox', value: nvram.qos_udp == '1' },
+			{ title: 'No Ingress QoS for UDP', name: 'f_qos_udp', type: 'checkbox', value: nvram.qos_udp == '1', suffix: '&nbsp; <small>Usually unwanted, use with caution<\/small>' },
 			{ title: 'Reset class when changing settings', name: 'f_qos_reset', type: 'checkbox', value: nvram.qos_reset == '1' },
 			{ title: 'Default class', name: 'qos_default', type: 'select', options: classList, value: nvram.qos_default },
 			{ title: 'Qdisc Scheduler', name: 'qos_pfifo', type: 'select', options: [['0','sfq'],['1','pfifo']], value: nvram.qos_pfifo }
@@ -241,18 +241,23 @@ function init() {
 <div class="section-title">Encapsulation Settings</div>
 <div class="section">
 	<script>
-		const overhead_options = [['0','None'],['32','32-PPPoE VC-Mux'],['40','40-PPPoE LLC/Snap'],['48','48-PPPoE LLC/Snap + VLAN'],
-										['10','10-PPPoA VC-Mux'],['14','14-PPPoA LLC/Snap'],
-										['8','8-RFC2684/RFC1483 Routed VC-Mux'],['16','16-RFC2684/RFC1483 Routed LLC/Snap'],
-										['24','24-RFC2684/RFC1483 Bridged VC-Mux'],
-										['32','32-RFC2684/RFC1483 Bridged LLC/Snap']];
+		const overhead_options = [['0','None'],
+		                          ['8','8-RFC2684/RFC1483 Routed VC-Mux'],
+		                          ['10','10-PPPoA VC-Mux'],
+		                          ['14','14-PPPoA LLC/Snap'],
+		                          ['16','16-RFC2684/RFC1483 Routed LLC/Snap'],
+		                          ['24','24-RFC2684/RFC1483 Bridged VC-Mux'],
+		                          ['32','32-PPPoE VC-Mux'],
+		                          ['32','32-RFC2684/RFC1483 Bridged LLC/Snap'],
+		                          ['40','40-PPPoE LLC/Snap'],
+		                          ['48','48-PPPoE LLC/Snap + VLAN']
+		                         ];
 
 		const encap_fields = [];
 		for (var uidx = 1; uidx <= nvram.mwan_num; ++uidx) {
 			var u = (uidx > 1) ? uidx : '';
 			encap_fields.push({
-				title: 'Overhead Value - WAN'+(uidx - 1), name: 'wan'+u+'_qos_overhead', type: 'select', options: overhead_options,
-				value: nvram["wan"+u+"_qos_overhead"]
+				title: 'Overhead Value - WAN'+(uidx - 1), name: 'wan'+u+'_qos_overhead', type: 'select', options: overhead_options, value: nvram['wan'+u+'_qos_overhead']
 			});
 			encap_fields.push(null);
 		}
@@ -263,7 +268,7 @@ function init() {
 
 <!-- / / / -->
 
-<div class="section-title">Inbound Rates / Limits</div>
+<div class="section-title">Inbound settings</div>
 <div class="section">
 	<script>
 		allRates = nvram.qos_irates.split(',');
@@ -271,13 +276,13 @@ function init() {
 
 		for (var uidx = 1; uidx <= nvram.mwan_num; ++uidx) {
 			var u = (uidx > 1) ? uidx : '';
-			f.push({ title: 'WAN'+(uidx - 1)+'<br>Inbound Bandwidth Limit', name: 'wan'+u+'_qos_ibw', type: 'text', maxlen: 8, size: 8, suffix: ' <small>kbit/s<\/small>', value: nvram['wan'+u+'_qos_ibw'] });
+			f.push({ title: 'WAN'+(uidx - 1)+' Inbound Bandwidth', name: 'wan'+u+'_qos_ibw', type: 'text', maxlen: 8, size: 8, suffix: ' <small>kbit/s - set this to 85% of your actual bandwidth<\/small>', value: nvram['wan'+u+'_qos_ibw'] });
 
 			f.push(null);
 			f.push({
 				title: '', multi: [
-					{ name: 'wan'+u+'_f_iheaderrate_hi', type: 'select', attrib: 'disabled="disabled"', options: [["", 'Rate %']], suffix: ' ' },
-					{ name: 'wan'+u+'_f_iheaderlimit_hi', type: 'select', attrib: 'disabled="disabled"', options: [["", 'Limit %']] }
+					{ name: 'wan'+u+'_f_iheaderrate_hi', type: 'select', attrib: 'disabled="disabled"', options: [["", '&nbsp;&nbsp;Protect']], suffix: ' ' },
+					{ name: 'wan'+u+'_f_iheaderlimit_hi', type: 'select', attrib: 'disabled="disabled"', options: [["", '&nbsp;&nbsp;&nbsp;&nbsp;Limit&nbsp;']] }
 				]
 			});
 
@@ -289,7 +294,7 @@ function init() {
 					{ title: classNames[i], multi: [
 						{ name: 'wan'+u+'_f_irate_'+i, type: 'select', options: pctListin, value: incoming_rate, suffix: ' ' },
 						{ name: 'wan'+u+'_f_iceil_'+i, type: 'select', options: pctListin, value: incoming_ceil },
-						{ type: 'custom', custom: ' &nbsp; <span id="_wan'+u+'_ikbps_'+i+'"><\/span>' } ]
+						{ type: 'custom', custom: '&nbsp; <span id="_wan'+u+'_ikbps_'+i+'"><\/span>' } ]
 				});
 			}
 
@@ -305,7 +310,7 @@ function init() {
 
 <!-- / / / -->
 
-<div class="section-title">Outbound Rates / Limits</div>
+<div class="section-title">Outbound settings</div>
 <div class="section">
 	<script>
 		cc = nvram.qos_orates.split(/[,-]/);
@@ -314,13 +319,13 @@ function init() {
 
 		for (var uidx = 1; uidx <= nvram.mwan_num; ++uidx) {
 			var u = (uidx >1) ? uidx : '';
-			f.push({ title: 'WAN'+(uidx - 1)+'<br>Outbound Bandwidth Limit', name: 'wan'+u+'_qos_obw', type: 'text', maxlen: 8, size: 8, suffix: ' <small>kbit/s<\/small>', value: nvram['wan'+u+'_qos_obw'] });
+			f.push({ title: 'WAN'+(uidx - 1)+' Outbound Bandwidth', name: 'wan'+u+'_qos_obw', type: 'text', maxlen: 8, size: 8, suffix: ' <small>kbit/s - set this to 85% of your actual bandwidth<\/small>', value: nvram['wan'+u+'_qos_obw'] });
 
 			f.push(null);
 			f.push({
 				title: '', multi: [
-					{ name: 'wan'+u+'_f_oheaderrate_hi', type: 'select', attrib: 'disabled="disabled"', options: [["", 'Rate %']], suffix: ' ' },
-					{ name: 'wan'+u+'_f_oheaderlimit_hi', type: 'select', attrib: 'disabled="disabled"', options: [["", 'Limit %']] }
+					{ name: 'wan'+u+'_f_oheaderrate_hi', type: 'select', attrib: 'disabled="disabled"', options: [["", '&nbsp;&nbsp;Protect']], suffix: ' ' },
+					{ name: 'wan'+u+'_f_oheaderlimit_hi', type: 'select', attrib: 'disabled="disabled"', options: [["", '&nbsp;&nbsp;&nbsp;&nbsp;Limit&nbsp;']] }
 				]
 			});
 
@@ -331,7 +336,7 @@ function init() {
 					{ title: classNames[i], multi: [
 						{ name: 'wan'+u+'_f_orate_'+i, type: 'select', options: pctListout, value: x, suffix: ' ' },
 						{ name: 'wan'+u+'_f_oceil_'+i, type: 'select', options: pctListout, value: y },
-						{ type: 'custom', custom: ' &nbsp; <span id="_wan'+u+'_okbps_'+i+'"><\/span>' } ]
+						{ type: 'custom', custom: '&nbsp; <span id="_wan'+u+'_okbps_'+i+'"><\/span>' } ]
 				});
 			}
 
@@ -347,7 +352,7 @@ function init() {
 
 <!-- / / / -->
 
-<div class="section-title">QoS Class Names <small><i><a href="javascript:toggleVisibility(cprefix,'classnames');"><span id="sesdiv_classnames_showhide">(Show)</span></a></i></small></div>
+<div class="section-title" id="class-names">Custom Class Names <small><i><a href="javascript:toggleVisibility(cprefix,'classnames');"><span id="sesdiv_classnames_showhide">(Show)</span></a></i></small></div>
 <div class="section" id="sesdiv_classnames" style="display:none">
 	<script>
 		if ((v = nvram.qos_classnames.match(/^(.+)\s+(.+)\s+(.+)\s+(.+)\s+(.+)\s+(.+)\s+(.+)\s+(.+)\s+(.+)\s+(.+)$/)) == null)
@@ -365,11 +370,11 @@ function init() {
 
 <!-- / / / -->
 
-<div class="section-title">TCP Vegas <small>(Network Congestion Control)</small></div>
+<div class="section-title">TCP Vegas</div>
 <div class="section">
 	<script>
 		createFieldTable('', [
-			{ title: 'Enable TCP Vegas', name: 'f_ne_vegas', type: 'checkbox', value: nvram.ne_vegas == '1' },
+			{ title: 'Enable TCP Vegas', name: 'f_ne_vegas', type: 'checkbox', value: nvram.ne_vegas == '1', suffix: '&nbsp;<small> Optimizes Latency over Throughput. Router generated traffic only.<\/small>'},
 			{ title: 'Alpha', name: 'ne_valpha', type: 'text', maxlen: 6, size: 8, value: nvram.ne_valpha },
 			{ title: 'Beta', name: 'ne_vbeta', type: 'text', maxlen: 6, size: 8, value: nvram.ne_vbeta },
 			{ title: 'Gamma', name: 'ne_vgamma', type: 'text', maxlen: 6, size: 8, value: nvram.ne_vgamma }

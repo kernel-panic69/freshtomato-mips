@@ -343,10 +343,10 @@ function save() {
 }
 
 function earlyInit() {
-	if (nvram.qos_enable != '1')
-		elem.display('qos-note1', 1);
+	if (nvram.qos_enable != 1)
+		E('qos-note1').style.display = 'block';
 	else
-		elem.display('qos-cl-grid', 1);
+		E('qos-cl-grid').style.display = 'block';
 
 	qosg.setup();
 }
@@ -377,8 +377,8 @@ function init() {
 
 <!-- / / / -->
 
-<div class="section-title">Outbound Direction</div>
-<div class="note-disabled" id="qos-note1" style="display:none"><b>QoS disabled.</b><br><br><a href="qos-settings.asp">Enable &raquo;</a></div>
+<div class="section-title">Traffic classification</div>
+<div class="note-disabled" id="qos-note1"><b>QoS disabled.</b><br><br><a href="qos-settings.asp">Enable &raquo;</a></div>
 
 <!-- / / / -->
 
