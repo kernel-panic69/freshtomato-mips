@@ -235,7 +235,7 @@ function earlyInit() {
 
 <!-- / / / -->
 
-<div class="note-disabled" id="note-disabled" style="display:none"><b>QoS disabled.</b><br><br><a href="qos-settings.asp">Enable &raquo;</a></div>
+<div class="note-disabled" id="note-disabled"><b>QoS disabled.</b><br><br><a href="qos-settings.asp">Enable &raquo;</a></div>
 
 <!-- / / / -->
 
