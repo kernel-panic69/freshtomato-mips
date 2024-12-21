@@ -5,6 +5,25 @@ FreshTomato-MIPS Changelog
 
 
 
+2024.5          2024.12.24
+---------------------------
+
+- Note: mainly a bug fix release
+
+- nginx: update to 1.27.3
+- sqlite: update to 3.47.2
+- dnsmasq: update to v2.91test2
+- libcurl: update to 8.11.1
+- meson: update to 1.6.1
+- libjpeg-turbo: update to 3.1.0
+- rom: update CA bundle to 2024-11-26
+- GUI: QoS: Basic Settings: fix displaying warnings on Advanced themes
+- busybox: revert changes to ntpd applet in 1.37.0 (ntpd server returns bogus data), added as a patch
+- miniupnpd: Init IPv6 firewall correctly and compile daemon with IGDv2 but disable it at runtime
+- miniupnpd: restart daemon if IPv6 address changes OR new (Case DHCPv6)
+- pppd: use pptp plugin maintaned by openwrt team instead of the one from accel-pptp
+
+
 2024.4          2024.11.26
 ---------------------------
 
