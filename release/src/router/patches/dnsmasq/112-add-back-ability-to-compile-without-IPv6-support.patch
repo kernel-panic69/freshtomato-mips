@@ -256,7 +256,7 @@
  	       }
 --- dnsmasq/src/cache.c
 +++ dnsmasq/src/cache.c
-@@ -537,8 +537,11 @@
+@@ -542,8 +542,11 @@
    else
      {
        int i;
@@ -269,7 +269,7 @@
        for (i = 0; i < hash_size; i++)
  	for (crecp = hash_table[i], up = &hash_table[i]; 
  	     crecp && ((crecp->flags & F_REVERSE) || !(crecp->flags & F_IMMORTAL));
-@@ -654,9 +657,11 @@
+@@ -659,9 +662,11 @@
  	  if ((flags & F_IPV4) && (new->flags & F_IPV4) &&
  	      new->addr.addr4.s_addr == addr->addr4.s_addr)
  	    return new;
@@ -281,7 +281,7 @@
  	}
  
        insert_error = 1;
-@@ -1102,7 +1107,11 @@
+@@ -1107,7 +1112,11 @@
  				time_t now, unsigned int prot)
  {
    struct crec *ans;
@@ -293,7 +293,7 @@
    
    if (crecp) /* iterating */
      ans = crecp->next;
-@@ -1297,12 +1306,14 @@
+@@ -1302,12 +1311,14 @@
  	  addrlen = INADDRSZ;
  	  domain_suffix = get_domain(addr.addr4);
  	}
@@ -308,7 +308,7 @@
        else
  	{
  	  my_syslog(LOG_ERR, _("bad address at %s line %d"), filename, lineno); 
-@@ -1472,6 +1483,7 @@
+@@ -1477,6 +1488,7 @@
  	    add_hosts_entry(cache, (union all_addr *)&hr->addr, INADDRSZ, SRC_CONFIG, (struct crec **)daemon->packet, revhashsz);
  	  }
  
@@ -316,7 +316,7 @@
  	if ((hr->flags & HR_6) &&
  	    (cache = whine_malloc(SIZEOF_POINTER_CREC)))
  	  {
-@@ -1480,6 +1492,7 @@
+@@ -1485,6 +1497,7 @@
  	    cache->flags = F_HOSTS | F_IMMORTAL | F_FORWARD | F_REVERSE | F_IPV6 | F_NAMEP | F_CONFIG;
  	    add_hosts_entry(cache, (union all_addr *)&hr->addr6, IN6ADDRSZ, SRC_CONFIG, (struct crec **)daemon->packet, revhashsz);
  	  }
@@ -324,7 +324,7 @@
        }
  	
    if (option_bool(OPT_NO_HOSTS) && !daemon->addn_hosts)
-@@ -1580,11 +1593,13 @@
+@@ -1585,11 +1598,13 @@
    int in_hosts = 0;
    size_t addrlen = sizeof(struct in_addr);
  
@@ -338,7 +338,7 @@
    
    inet_ntop(prot, host_address, daemon->addrbuff, ADDRSTRLEN);
    
-@@ -1912,8 +1927,10 @@
+@@ -1917,8 +1932,10 @@
        a = daemon->addrbuff;
        if (cache->flags & F_IPV4)
  	inet_ntop(AF_INET, &cache->addr, a, ADDRSTRLEN);
