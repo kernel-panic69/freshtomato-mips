@@ -1287,7 +1287,7 @@ const defaults_t defaults[] = {
 	{ "usb_ohci",			"0"				},
 	{ "usb_usb2",			"1"				},
 #ifdef TCONFIG_BCMARM
-	{ "usb_usb3",			"1"				},
+	{ "usb_usb3",			"0"				},
 #endif
 #ifdef TCONFIG_MICROSD
 	{ "usb_mmc",			"-1"				},

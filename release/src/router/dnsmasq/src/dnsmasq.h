@@ -339,7 +339,7 @@ union all_addr {
   struct datablock {
     unsigned short rrtype;
     unsigned char datalen; /* also length of SOA in negative records. */
-    char data[];
+    char data[1];
   } rrdata;
 };
 
@@ -772,9 +772,8 @@ struct dyndir {
 #define FREC_DS_QUERY          16
 #define FREC_AD_QUESTION       32
 #define FREC_DO_QUESTION       64
-#define FREC_ADDED_PHEADER    128
-#define FREC_HAS_PHEADER      256
-#define FREC_GONE_TO_TCP      512
+#define FREC_HAS_PHEADER      128
+#define FREC_GONE_TO_TCP      256
 
 struct frec {
   struct frec_src {
@@ -1402,7 +1401,7 @@ void report_addresses(struct dns_header *header, size_t len, u32 mark);
 #endif
 size_t answer_request(struct dns_header *header, char *limit, size_t qlen,  
 		      struct in_addr local_addr, struct in_addr local_netmask, 
-		      time_t now, int ad_reqd, int do_bit, int *stale, int *filtered);
+		      time_t now, int ad_reqd, int do_bit, int no_cache, int *stale, int *filtered);
 int check_for_bogus_wildcard(struct dns_header *header, size_t qlen, char *name, 
 			     time_t now);
 int check_for_ignored_address(struct dns_header *header, size_t qlen);
@@ -1667,7 +1666,7 @@ void route_sock(void);
 
 /* bpf.c or netlink.c */
 typedef union {
-	int (*af_unspec)(int family, char *addrp, char *mac, size_t maclen, void *parmv);
+	int (*af_unspec)(int family, void *addrp, char *mac, size_t maclen, void *parmv);
 	int (*af_inet)(struct in_addr local, int if_index, char *label, struct in_addr netmask, struct in_addr broadcast, void *vparam);
 	int (*af_inet6)(struct in6_addr *local, int prefix, int scope, int if_index, int flags, unsigned int preferred, unsigned int valid, void *vparam);
 	int (*af_local)(int index, unsigned int type, char *mac, size_t maclen, void *parm);

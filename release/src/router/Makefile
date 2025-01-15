@@ -1519,7 +1519,7 @@ miniupnpd/stamp-h1:
 	$(call patch_files,miniupnpd)
 	cd miniupnpd && \
 		PKG_CONFIG_LIBDIR="" \
-		./configure --leasefile --vendorcfg --portinuse --firewall=iptables --iptablespath=$(TOP)/$(IPTABLES_TARGET) $(if $(TCONFIG_IPV6),--ipv6 --igd2,)
+		./configure --igd2 --leasefile --vendorcfg --portinuse --disable-pppconn --firewall=iptables --iptablespath=$(TOP)/$(IPTABLES_TARGET) $(if $(TCONFIG_IPV6),--ipv6,)
 	@touch $@
 
 miniupnpd: miniupnpd/stamp-h1
@@ -1665,14 +1665,16 @@ pppd/Makefile:
 	cd pppd && autoreconf -fsi && \
 		CFLAGS="$(if $(TCONFIG_OPTIMIZE_SIZE),-Os,-O2) -Wall $(EXTRACFLAGS) $(OPTSIZE_MORE_FLAG)" \
 		CPPFLAGS="$(if $(TCONFIG_OPTIMIZE_SIZE),-Os,-O2)" \
-		enable_microsoft_extensions=yes \
-		with_openssl=no enable_eaptls=no enable_peap=no \
-		with_pam=no with_pcap=no with_srp=no \
-		$(if $(TCONFIG_OPTIMIZE_SIZE_MORE),enable_multilink=no,enable_multilink=yes) \
-		$(if $(TCONFIG_IPV6),enable_ipv6cp=yes,enable_ipv6cp=no) \
 		$(CONFIGURE) --prefix=/usr --sysconfdir=/tmp --with-plugin-dir=/usr/lib/pppd \
 			--with-runtime-dir=/var/run --with-logfile-dir=/var/log \
-			--with-system-ca-path=/etc/ssl/certs
+			--with-system-ca-path=/etc/ssl/certs \
+			--enable-microsoft-extensions --enable-plugins \
+			--disable-openssl-engine --without-openssl \
+			--disable-eaptls --disable-peap --disable-systemd \
+			--without-pam --without-pcap --without-srp --without-atm \
+			--disable-cbcp --disable-mslanman \
+			$(if $(TCONFIG_OPTIMIZE_SIZE_MORE),--disable-multilink,--enable-multilink) \
+			$(if $(TCONFIG_IPV6),--enable-ipv6cp,--disable-ipv6cp)
 
 pppd: pppd/Makefile
 	@$(SEP)
@@ -2498,9 +2500,9 @@ libpng: libpng/build/Makefile
 	@$(MAKE) -C libpng/build DESTDIR=$(TOP)/libpng/staged install
 
 libpng-install:
-	install -D libpng/build/libpng16.so.16.44.0 $(INSTALLDIR)/libpng/usr/lib/libpng16.so.16.44.0
-	$(STRIP) $(INSTALLDIR)/libpng/usr/lib/libpng16.so.16.44.0
-	cd $(INSTALLDIR)/libpng/usr/lib && ln -sf libpng16.so.16.44.0 libpng16.so && ln -sf libpng16.so.16.44.0 libpng16.so.16
+	install -D libpng/build/libpng16.so.16.45.0 $(INSTALLDIR)/libpng/usr/lib/libpng16.so.16.45.0
+	$(STRIP) $(INSTALLDIR)/libpng/usr/lib/libpng16.so.16.45.0
+	cd $(INSTALLDIR)/libpng/usr/lib && ln -sf libpng16.so.16.45.0 libpng16.so && ln -sf libpng16.so.16.45.0 libpng16.so.16
 
 libpng-clean:
 	@rm -rf libpng/build
